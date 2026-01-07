@@ -14,7 +14,6 @@
 		"ssl_forced",
 		"caching_enabled",
 		"block_exploits",
-		"advanced_config",
 		"meta",
 		"allow_websocket_upgrade",
 		"http2_support",
@@ -67,10 +66,6 @@
 		"block_exploits": {
 			"$ref": "../common.json#/properties/block_exploits"
 		},
-		"advanced_config": {
-			"type": "string",
-			"example": ""
-		},
 		"meta": {
 			"type": "object",
 			"example": {
@@ -99,7 +94,7 @@
 			"minItems": 0,
 			"items": {
 				"type": "object",
-				"required": ["forward_scheme", "forward_host", "forward_port", "path"],
+				"required": ["forward_scheme", "forward_port", "path"],
 				"additionalProperties": false,
 				"properties": {
 					"id": {
@@ -112,16 +107,10 @@
 					"forward_scheme": {
 						"$ref": "#/properties/forward_scheme"
 					},
-					"forward_host": {
-						"$ref": "#/properties/forward_host"
-					},
 					"forward_port": {
 						"$ref": "#/properties/forward_port"
 					},
 					"forward_path": {
-						"type": "string"
-					},
-					"advanced_config": {
 						"type": "string"
 					}
 				}
@@ -130,7 +119,6 @@
 				{
 					"path": "/app",
 					"forward_scheme": "http",
-					"forward_host": "example.com",
 					"forward_port": 80
 				}
 			]

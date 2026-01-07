@@ -20,6 +20,11 @@ class User extends Model {
 		if (typeof this.roles === "undefined") {
 			this.roles = [];
 		}
+
+		// Default for designated forward host
+		if (typeof this.designated_forward_host === "undefined") {
+			this.designated_forward_host = "127.0.0.1";
+		}
 	}
 
 	$beforeUpdate() {

@@ -1,4 +1,3 @@
-import { IconSettings } from "@tabler/icons-react";
 import cn from "classnames";
 import EasyModal, { type InnerModalProps } from "ez-modal-react";
 import { Field, Form, Formik } from "formik";
@@ -12,14 +11,13 @@ import {
 	HasPermission,
 	Loading,
 	LocationsFields,
-	NginxConfigField,
 	SSLCertificateField,
 	SSLOptionsFields,
 } from "src/components";
 import { useProxyHost, useSetProxyHost, useUser } from "src/hooks";
 import { T } from "src/locale";
 import { MANAGE, PROXY_HOSTS } from "src/modules/Permissions";
-import { validateNumber, validateString } from "src/modules/Validations";
+import { validateNumber } from "src/modules/Validations";
 import { showObjectSuccess } from "src/notifications";
 
 const showProxyHostModal = (id: number | "new") => {
@@ -74,7 +72,7 @@ const ProxyHostModal = EasyModal.create(({ id, visible, remove }: Props) => {
 							// Details tab
 							domainNames: data?.domainNames || [],
 							forwardScheme: data?.forwardScheme || "http",
-							forwardHost: data?.forwardHost || "",
+							forwardHost: currentUser?.designatedForwardHost || "127.0.0.1",
 							forwardPort: data?.forwardPort || undefined,
 							accessListId: data?.accessListId || 0,
 							cachingEnabled: data?.cachingEnabled || false,
@@ -88,8 +86,6 @@ const ProxyHostModal = EasyModal.create(({ id, visible, remove }: Props) => {
 							http2Support: data?.http2Support || false,
 							hstsEnabled: data?.hstsEnabled || false,
 							hstsSubdomains: data?.hstsSubdomains || false,
-							// Advanced tab
-							advancedConfig: data?.advancedConfig || "",
 							meta: data?.meta || {},
 						} as any
 					}
@@ -144,19 +140,6 @@ const ProxyHostModal = EasyModal.create(({ id, visible, remove }: Props) => {
 													<T id="column.ssl" />
 												</a>
 											</li>
-											<li className="nav-item ms-auto" role="presentation">
-												<a
-													href="#tab-advanced"
-													className="nav-link"
-													title="Settings"
-													data-bs-toggle="tab"
-													aria-selected="false"
-													tabIndex={-1}
-													role="tab"
-												>
-													<IconSettings size={20} />
-												</a>
-											</li>
 										</ul>
 									</div>
 									<div className="card-body">
@@ -196,31 +179,18 @@ const ProxyHostModal = EasyModal.create(({ id, visible, remove }: Props) => {
 														</Field>
 													</div>
 													<div className="col-md-6">
-														<Field name="forwardHost" validate={validateString(1, 255)}>
-															{({ field, form }: any) => (
-																<div className="mb-3">
-																	<label className="form-label" htmlFor="forwardHost">
-																		<T id="proxy-host.forward-host" />
-																	</label>
-																	<input
-																		id="forwardHost"
-																		type="text"
-																		className={`form-control ${form.errors.forwardHost && form.touched.forwardHost ? "is-invalid" : ""}`}
-																		required
-																		placeholder="example.com"
-																		{...field}
-																	/>
-																	{form.errors.forwardHost ? (
-																		<div className="invalid-feedback">
-																			{form.errors.forwardHost &&
-																			form.touched.forwardHost
-																				? form.errors.forwardHost
-																				: null}
-																		</div>
-																	) : null}
-																</div>
-															)}
-														</Field>
+														<div className="mb-3">
+															<label className="form-label" htmlFor="forwardHost">
+																<T id="proxy-host.forward-host" />
+															</label>
+															<input
+																id="forwardHost"
+																type="text"
+																className="form-control-plaintext"
+																value={currentUser?.designatedForwardHost || "127.0.0.1"}
+																disabled
+															/>
+														</div>
 													</div>
 													<div className="col-md-3">
 														<Field name="forwardPort" validate={validateNumber(1, 65535)}>
@@ -340,9 +310,6 @@ const ProxyHostModal = EasyModal.create(({ id, visible, remove }: Props) => {
 													allowNew
 												/>
 												<SSLOptionsFields color="bg-lime" />
-											</div>
-											<div className="tab-pane" id="tab-advanced" role="tabpanel">
-												<NginxConfigField />
 											</div>
 										</div>
 									</div>

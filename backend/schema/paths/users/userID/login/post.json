@@ -39,6 +39,7 @@
 									"name": "John Doe",
 									"nickname": "Jonny",
 									"avatar": "//www.gravatar.com/avatar/3c8d73f45fd8763f827b964c76e6032a?default=mm",
+									"designated_forward_host": "127.0.0.1",
 									"roles": []
 								}
 							}

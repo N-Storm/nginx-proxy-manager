@@ -75,6 +75,7 @@ const UserModal = EasyModal.create(({ id, visible, remove }: Props) => {
 							email: data?.email,
 							isAdmin: data?.roles?.includes("admin"),
 							isDisabled: data?.isDisabled,
+							designatedForwardHost: data?.designatedForwardHost,
 						} as any
 					}
 					onSubmit={onSubmit}
@@ -171,6 +172,30 @@ const UserModal = EasyModal.create(({ id, visible, remove }: Props) => {
 								</div>
 								{currentUser && data && currentUser?.id !== data?.id ? (
 									<div className="my-3">
+										<div className="mb-3">
+											<Field name="designatedForwardHost" validate={validateString(1,50)}>
+												{({ field, form }: any) => (
+													<div className="form-floating mb-3">
+														<input
+															id="designatedForwardHost"
+															className={`form-control ${form.errors.designatedForwardHost && form.touched.designatedForwardHost ? "is-invalid" : ""}`}
+															placeholder={intl.formatMessage({ id: "proxy-host.forward-host" })}
+															{...field}
+														/>
+														<label htmlFor="designatedForwardHost">
+															<T id="proxy-host.forward-host" />
+														</label>
+														{form.errors.designatedForwardHost ? (
+															<div className="invalid-feedback">
+																{form.errors.designatedForwardHost && form.touched.designatedForwardHost
+																	? form.errors.designatedForwardHost
+																	: null}
+															</div>
+														) : null}
+													</div>
+												)}
+											</Field>
+										</div>
 										<h4 className="py-2">
 											<T id="options" />
 										</h4>

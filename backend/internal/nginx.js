@@ -165,13 +165,6 @@ const internalNginx = {
 						host.locations[i],
 					);
 
-					if (locationCopy.forward_host.indexOf("/") > -1) {
-						const splitted = locationCopy.forward_host.split("/");
-
-						locationCopy.forward_host = splitted.shift();
-						locationCopy.forward_path = `/${splitted.join("/")}`;
-					}
-
 					renderedLocations += await renderEngine.parseAndRender(template, locationCopy);
 				}
 			};
@@ -211,9 +204,6 @@ const internalNginx = {
 			// Manipulate the data a bit before sending it to the template
 			if (nice_host_type !== "default") {
 				host.use_default_location = true;
-				if (typeof host.advanced_config !== "undefined" && host.advanced_config) {
-					host.use_default_location = !internalNginx.advancedConfigHasDefaultLocation(host.advanced_config);
-				}
 			}
 
 			// For redirection hosts, if the scheme is not http or https, set it to $scheme

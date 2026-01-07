@@ -95,6 +95,7 @@
 									"name": "Administrator",
 									"nickname": "Admin",
 									"avatar": "",
+									"designated_forward_host": "127.0.0.1",
 									"roles": [
 										"admin"
 									]

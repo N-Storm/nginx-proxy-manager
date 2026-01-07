@@ -13,6 +13,7 @@ const fetchUser = (id: number | string) => {
 			nickname: "",
 			roles: [],
 			avatar: "",
+			designatedForwardHost: "",
 		} as User);
 	}
 	return getUser(id, ["permissions"]);

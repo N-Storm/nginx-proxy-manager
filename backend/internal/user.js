@@ -28,6 +28,7 @@ const internalUser = {
 		delete data.auth;
 
 		data.avatar = data.avatar || "";
+		data.designated_forward_host = data.designated_forward_host || "127.0.0.1";
 		data.roles = data.roles || [];
 
 		if (typeof data.is_disabled !== "undefined") {

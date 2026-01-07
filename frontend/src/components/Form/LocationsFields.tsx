@@ -1,10 +1,9 @@
-import { IconSettings } from "@tabler/icons-react";
-import CodeEditor from "@uiw/react-textarea-code-editor";
 import cn from "classnames";
 import { useFormikContext } from "formik";
 import { useState } from "react";
 import type { ProxyLocation } from "src/api/backend";
-import { intl, T } from "src/locale";
+import { T } from "src/locale";
+import { useUser } from "src/hooks";
 import styles from "./LocationsFields.module.css";
 
 interface Props {
@@ -14,18 +13,12 @@ interface Props {
 export function LocationsFields({ initialValues, name = "locations" }: Props) {
 	const [values, setValues] = useState<ProxyLocation[]>(initialValues || []);
 	const { setFieldValue } = useFormikContext();
-	const [advVisible, setAdvVisible] = useState<number[]>([]);
+	const { data: currentUser } = useUser("me");
 
 	const blankItem: ProxyLocation = {
 		path: "",
-		advancedConfig: "",
 		forwardScheme: "http",
-		forwardHost: "",
 		forwardPort: 80,
-	};
-
-	const toggleAdvVisible = (idx: number) => {
-		setAdvVisible(advVisible.includes(idx) ? advVisible.filter((i) => i !== idx) : [...advVisible, idx]);
 	};
 
 	const handleAdd = () => {
@@ -78,16 +71,6 @@ export function LocationsFields({ initialValues, name = "locations" }: Props) {
 									/>
 								</div>
 							</div>
-							<div className="col-md-2 text-end">
-								<button
-									type="button"
-									className="btn p-0"
-									title="Advanced"
-									onClick={() => toggleAdvVisible(idx)}
-								>
-									<IconSettings size={20} />
-								</button>
-							</div>
 						</div>
 						<div className="row">
 							<div className="col-md-3">
@@ -109,16 +92,14 @@ export function LocationsFields({ initialValues, name = "locations" }: Props) {
 							<div className="col-md-6">
 								<div className="mb-3">
 									<label className="form-label" htmlFor="forwardHost">
-										<T id="proxy-host.forward-host" />
+										Forward Host
 									</label>
 									<input
 										id="forwardHost"
 										type="text"
-										className="form-control"
-										required
-										placeholder="eg: 10.0.0.1/path/"
-										value={item.forwardHost}
-										onChange={(e) => handleChange(idx, "forwardHost", e.target.value)}
+										className="form-control-plaintext"
+										value={currentUser?.designatedForwardHost || "127.0.0.1"}
+										disabled
 									/>
 								</div>
 							</div>
@@ -141,26 +122,6 @@ export function LocationsFields({ initialValues, name = "locations" }: Props) {
 								</div>
 							</div>
 						</div>
-						{advVisible.includes(idx) && (
-							<div className="">
-								<CodeEditor
-									language="nginx"
-									placeholder={intl.formatMessage({ id: "nginx-config.placeholder" })}
-									padding={15}
-									data-color-mode="dark"
-									minHeight={170}
-									indentWidth={2}
-									value={item.advancedConfig}
-									onChange={(e) => handleChange(idx, "advancedConfig", e.target.value)}
-									style={{
-										fontFamily:
-											"ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace",
-										borderRadius: "0.3rem",
-										minHeight: "170px",
-									}}
-								/>
-							</div>
-						)}
 						<div className="mt-1">
 							<a
 								href="#"

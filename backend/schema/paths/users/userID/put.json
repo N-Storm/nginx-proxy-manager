@@ -47,6 +47,9 @@
 						"email": {
 							"$ref": "../../../components/user-object.json#/properties/email"
 						},
+						"designated_forward_host": {
+							"$ref": "../../../components/user-object.json#/properties/designated_forward_host"
+						},
 						"roles": {
 							"$ref": "../../../components/user-object.json#/properties/roles"
 						},
@@ -74,6 +77,7 @@
 								"name": "Jamie Curnow",
 								"nickname": "James",
 								"avatar": "//www.gravatar.com/avatar/6193176330f8d38747f038c170ddb193?default=mm",
+								"designated_forward_host": "127.0.0.1",
 								"roles": ["admin"]
 							}
 						}

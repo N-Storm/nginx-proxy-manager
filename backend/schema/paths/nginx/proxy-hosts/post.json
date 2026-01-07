@@ -63,9 +63,6 @@
 						"access_list_id": {
 							"$ref": "../../../components/proxy-host-object.json#/properties/access_list_id"
 						},
-						"advanced_config": {
-							"$ref": "../../../components/proxy-host-object.json#/properties/advanced_config"
-						},
 						"enabled": {
 							"$ref": "../../../components/proxy-host-object.json#/properties/enabled"
 						},
@@ -110,7 +107,6 @@
 								"ssl_forced": false,
 								"caching_enabled": false,
 								"block_exploits": false,
-								"advanced_config": "",
 								"meta": {},
 								"allow_websocket_upgrade": false,
 								"http2_support": false,
@@ -129,6 +125,7 @@
 									"name": "jamiec",
 									"nickname": "jamiec",
 									"avatar": "//www.gravatar.com/avatar/6193176330f8d38747f038c170ddb193?default=mm",
+									"designated_forward_host": "127.0.0.1",
 									"roles": [
 										"admin"
 									]

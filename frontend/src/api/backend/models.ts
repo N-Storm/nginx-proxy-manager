@@ -27,6 +27,7 @@ export interface User {
 	name: string;
 	nickname: string;
 	avatar: string;
+	designatedForwardHost: string;
 	roles: string[];
 	permissions?: UserPermissions;
 }
@@ -99,9 +100,7 @@ export interface Certificate {
 
 export interface ProxyLocation {
 	path: string;
-	advancedConfig: string;
 	forwardScheme: string;
-	forwardHost: string;
 	forwardPort: number;
 }
 
@@ -119,7 +118,6 @@ export interface ProxyHost {
 	sslForced: boolean;
 	cachingEnabled: boolean;
 	blockExploits: boolean;
-	advancedConfig: string;
 	meta: Record<string, any>;
 	allowWebsocketUpgrade: boolean;
 	http2Support: boolean;

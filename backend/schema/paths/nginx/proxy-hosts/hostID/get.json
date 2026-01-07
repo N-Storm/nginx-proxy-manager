@@ -44,7 +44,6 @@
 								"ssl_forced": false,
 								"caching_enabled": false,
 								"block_exploits": false,
-								"advanced_config": "",
 								"meta": {
 									"nginx_online": true,
 									"nginx_err": null
@@ -65,6 +64,7 @@
 									"name": "jamiec",
 									"nickname": "jamiec",
 									"avatar": "//www.gravatar.com/avatar/6193176330f8d38747f038c170ddb193?default=mm",
+									"designated_forward_host": "127.0.0.1",
 									"roles": [
 										"admin"
 									]

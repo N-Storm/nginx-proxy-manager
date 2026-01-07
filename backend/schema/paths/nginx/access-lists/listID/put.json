@@ -93,6 +93,7 @@
 									"name": "Administrator",
 									"nickname": "some guy",
 									"avatar": "//www.gravatar.com/avatar/e64c7d89f26bd1972efa854d13d7dd61?default=mm",
+									"designated_forward_host": "127.0.0.1",
 									"roles": ["admin"]
 								},
 								"items": [
