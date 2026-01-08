@@ -67,6 +67,9 @@ jobs:
           echo "BUILD_VERSION=\"$(cat .version)\"" > $GITHUB_OUTPUT
           echo "BUILD_DATE=\"$(date '+%Y-%m-%d %T %Z')\"" >> $GITHUB_OUTPUT
 
+      - name: Build the frontend
+        run: cd scripts/ci && ./frontend-build
+
       # Build and push Docker image with Buildx (don't push on PR)
       # https://github.com/docker/build-push-action
       - name: Build and push Docker image
