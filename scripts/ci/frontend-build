@@ -8,6 +8,8 @@ DOCKER_IMAGE=nginxproxymanager/nginx-full:certbot-node
 # Ensure docker exists
 if hash docker 2>/dev/null; then
 	docker pull "${DOCKER_IMAGE}"
+	cd "${DIR}/../../frontend"
+	npm version --allow-same-version --no-commit-hooks --no-git-tag-version "$(cat ../.version)"
 	cd "${DIR}/../.."
 	echo -e "${BLUE}❯ ${CYAN}Building Frontend ...${RESET}"
 

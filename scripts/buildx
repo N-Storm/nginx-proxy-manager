@@ -5,6 +5,9 @@ DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 echo -e "${BLUE}❯ ${CYAN}Building docker multiarch: ${YELLOW}${*}${RESET}"
 
+cd "${DIR}/../backend" || exit 1
+npm version --allow-same-version --no-commit-hooks --no-git-tag-version "$(cat ../.version)"
+
 cd "${DIR}/.." || exit 1
 
 # determine commit if not already set

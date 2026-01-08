@@ -59,12 +59,14 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
-      - name: Gather some additional metadata
+      - name: Gather additional metadata and update version info
         id: additional_meta
         run: |
           echo "BUILD_VERSION=\"$(cat .version)\"" > $GITHUB_OUTPUT
           echo "BUILD_DATE=\"$(date '+%Y-%m-%d %T %Z')\"" >> $GITHUB_OUTPUT
           echo "BUILD_COMMIT=\"$(git log -n 1 --format=%h)\"" >> $GITHUB_OUTPUT
+          pushd backend && npm version --allow-same-version --no-commit-hooks --no-git-tag-version "$(cat ../.version)"; popd
+          pushd frontend && npm version --allow-same-version --no-commit-hooks --no-git-tag-version "$(cat ../.version)"; popd
 
       - name: Build the frontend
         run: cd scripts/ci && ./frontend-build
