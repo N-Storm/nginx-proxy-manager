@@ -58,14 +58,13 @@ jobs:
         uses: docker/metadata-action@96383f45573cb7f253c731d3b3ab81c87ef81934 # v5.0.0
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          labels: |
-            org.opencontainers.image.revision={{sha}}
 
       - name: Gather some additional metadata
         id: additional_meta
         run: |
           echo "BUILD_VERSION=\"$(cat .version)\"" > $GITHUB_OUTPUT
           echo "BUILD_DATE=\"$(date '+%Y-%m-%d %T %Z')\"" >> $GITHUB_OUTPUT
+          echo "BUILD_COMMIT=\"$(git log -n 1 --format=%h)\"" >> $GITHUB_OUTPUT
 
       - name: Build the frontend
         run: cd scripts/ci && ./frontend-build
@@ -79,7 +78,7 @@ jobs:
           context: .
           file: docker/Dockerfile
           build-args: |
-            BUILD_COMMIT=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.revision'] }}
+            BUILD_COMMIT=${{ env.BUILD_COMMIT }}
             BUILD_VERSION=${{ env.BUILD_VERSION }}
             BUILD_DATE=${{ env.BUILD_DATE }}
           push: ${{ github.event_name != 'pull_request' }}
@@ -88,6 +87,7 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
         env:
+          BUILD_COMMIT: ${{ steps.additional_meta.outputs.BUILD_COMMIT }}
           BUILD_VERSION: ${{ steps.additional_meta.outputs.BUILD_VERSION }}
           BUILD_DATE: ${{ steps.additional_meta.outputs.BUILD_DATE }}
 
