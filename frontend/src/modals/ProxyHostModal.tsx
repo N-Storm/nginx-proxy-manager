@@ -72,7 +72,7 @@ const ProxyHostModal = EasyModal.create(({ id, visible, remove }: Props) => {
 							// Details tab
 							domainNames: data?.domainNames || [],
 							forwardScheme: data?.forwardScheme || "http",
-							forwardHost: currentUser?.designatedForwardHost || "127.0.0.1",
+							forwardHost: data?.owner?.designatedForwardHost || currentUser?.designatedForwardHost,
 							forwardPort: data?.forwardPort || undefined,
 							accessListId: data?.accessListId || 0,
 							cachingEnabled: data?.cachingEnabled || false,
@@ -187,7 +187,7 @@ const ProxyHostModal = EasyModal.create(({ id, visible, remove }: Props) => {
 																id="forwardHost"
 																type="text"
 																className="form-control-plaintext"
-																value={currentUser?.designatedForwardHost || "127.0.0.1"}
+																value={data?.owner?.designatedForwardHost || currentUser?.designatedForwardHost}
 																disabled
 															/>
 														</div>
@@ -301,7 +301,7 @@ const ProxyHostModal = EasyModal.create(({ id, visible, remove }: Props) => {
 												</div>
 											</div>
 											<div className="tab-pane" id="tab-locations" role="tabpanel">
-												<LocationsFields initialValues={data?.locations || []} />
+												<LocationsFields initialValues={data?.locations || []} forwardHost={data?.owner?.designatedForwardHost || currentUser?.designatedForwardHost} />
 											</div>
 											<div className="tab-pane" id="tab-ssl" role="tabpanel">
 												<SSLCertificateField

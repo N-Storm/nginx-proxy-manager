@@ -101,6 +101,7 @@ export interface Certificate {
 export interface ProxyLocation {
 	path: string;
 	forwardScheme: string;
+	forwardPath: string;
 	forwardPort: number;
 }
 

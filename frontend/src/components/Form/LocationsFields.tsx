@@ -3,21 +3,22 @@ import { useFormikContext } from "formik";
 import { useState } from "react";
 import type { ProxyLocation } from "src/api/backend";
 import { T } from "src/locale";
-import { useUser } from "src/hooks";
 import styles from "./LocationsFields.module.css";
 
 interface Props {
 	initialValues: ProxyLocation[];
+	forwardHost?: string;
 	name?: string;
 }
-export function LocationsFields({ initialValues, name = "locations" }: Props) {
+export function LocationsFields({ initialValues, forwardHost, name = "locations" }: Props) {
 	const [values, setValues] = useState<ProxyLocation[]>(initialValues || []);
 	const { setFieldValue } = useFormikContext();
-	const { data: currentUser } = useUser("me");
+	// const { data: currentUser } = useUser("me");
 
 	const blankItem: ProxyLocation = {
 		path: "",
 		forwardScheme: "http",
+		forwardPath: "/",
 		forwardPort: 80,
 	};
 
@@ -73,7 +74,7 @@ export function LocationsFields({ initialValues, name = "locations" }: Props) {
 							</div>
 						</div>
 						<div className="row">
-							<div className="col-md-3">
+							<div className="col-md-2">
 								<div className="mb-3">
 									<label className="form-label" htmlFor="forwardScheme">
 										<T id="host.forward-scheme" />
@@ -89,7 +90,7 @@ export function LocationsFields({ initialValues, name = "locations" }: Props) {
 									</select>
 								</div>
 							</div>
-							<div className="col-md-6">
+							<div className="col-md-3">
 								<div className="mb-3">
 									<label className="form-label" htmlFor="forwardHost">
 										Forward Host
@@ -97,9 +98,25 @@ export function LocationsFields({ initialValues, name = "locations" }: Props) {
 									<input
 										id="forwardHost"
 										type="text"
-										className="form-control-plaintext"
-										value={currentUser?.designatedForwardHost || "127.0.0.1"}
+										className="form-control"
+										value={forwardHost}
 										disabled
+									/>
+								</div>
+							</div>
+							<div className="col-md-4">
+								<div className="mb-3">
+									<label className="form-label" htmlFor="forwardPath">
+										Forward Path
+									</label>
+									<input
+										id="forwardPath"
+										type="text"
+										className="form-control"
+										placeholder="/path"
+										autoComplete="off"
+										value={item.forwardPath}
+										onChange={(e) => handleChange(idx, "forwardPath", e.target.value)}
 									/>
 								</div>
 							</div>
