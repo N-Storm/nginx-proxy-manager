@@ -2,9 +2,19 @@ name: Docker Build & Publish
 
 on:
   push:
-    branches: [ "develop", "fossvps-mod" ]
+    branches: [ "fossvps-mod" ]
     # Publish semver tags as releases.
     tags: [ 'v*.*.*' ]
+  pull_request:
+    paths-ignore:
+      - '**/*.md'
+      - '**/.gitignore'
+      - 'LICENSE'
+    types:
+      - 'opened'
+      - 'reopened'
+      - 'synchronize'
+      - 'ready_for_review'    
   workflow_dispatch:
 
 env:
