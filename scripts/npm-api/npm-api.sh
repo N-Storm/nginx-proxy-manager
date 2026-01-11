@@ -1065,7 +1065,7 @@ user_create() {
       nickname: $nickname,
       email: $email,
       designated_forward_host: $forwardhost,
-      roles: ["admin"],
+      roles: [],
       is_disabled: false,
       auth: {
         type: "password",
@@ -1093,6 +1093,24 @@ user_create() {
             '.[] | select(.email == $email and .name == $name) | .id')
 
         if [ -n "$USER_ID" ]; then
+            # Set permissions
+            PERMISSIONS_DATA=$(jq -n \
+              '{
+                visibility: "user",
+                access_lists: "manage",
+                certificates: "manage",
+                dead_hosts: "hidden",
+                proxy_hosts: "manage",
+                redirection_hosts: "hidden",
+                streams: "hidden"
+              }')
+
+            # send data to API
+            PERMISSIONS_RESPONSE=$(curl -s -w "HTTPSTATUS:%{http_code}" -X PUT "$BASE_URL/users/$USER_ID/permissions" \
+                -H "Authorization: Bearer $(cat "$TOKEN_FILE")" \
+                -H "Content-Type: application/json; charset=UTF-8" \
+                --data-raw "$PERMISSIONS_DATA")
+
             echo -e " ✅ ${COLOR_GREEN}User $USERNAME created successfully!${CoR}"
             echo -e " 📧 Email: ${COLOR_YELLOW}$EMAIL${CoR}"
             echo -e " 📧 Forward host: ${COLOR_YELLOW}$FORWARDHOST${CoR}"
