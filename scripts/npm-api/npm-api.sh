@@ -165,7 +165,7 @@ HSTS_SUBDOMAINS=0
 DEFAULT_EMAIL="$API_USER"
 DOMAIN=""
 DOMAIN_NAMES=""
-FORWARD_HOST=""
+FORWARD_HOST="nohost.nodomain"
 FORWARD_PORT=""
 CUSTOM_LOCATIONS=""
 USERNAME=""
@@ -566,10 +566,9 @@ show_help() {
   echo -e "  --host-show ${COLOR_CYAN}🆔${CoR}                          Show ${COLOR_GREY}Full details for a specific host by ${COLOR_YELLOW}ID${CoR}"
   echo ""  
 
-  echo -e "  --host-create ${COLOR_ORANGE}domain${CoR} ${COLOR_CYAN}-i ${COLOR_ORANGE}forward_host(!IGNORED!)${CoR} ${COLOR_CYAN}-p ${COLOR_ORANGE}forward_port${CoR} [options]\n" 
+  echo -e "  --host-create ${COLOR_ORANGE}domain${CoR} ${COLOR_CYAN}-p ${COLOR_ORANGE}forward_port${CoR} [options]\n" 
   echo -e "     ${COLOR_RED}Required:${CoR}"
   echo -e "            domain                        Domain name (${COLOR_RED}required${CoR})"
-  echo -e "       ${COLOR_CYAN}-i${CoR}   forward-host                  IP address or domain name of the target server (${COLOR_RED}required, but ignored${CoR})"
   echo -e "       ${COLOR_CYAN}-p${CoR}   forward-port                  Port of the target server (${COLOR_RED}required${CoR})\n"
 
   echo -e "     optional: ${COLOR_GREY}(Check default settings,no argument needed if already set!)${CoR}"  
@@ -586,7 +585,7 @@ show_help() {
   echo -e "  --host-disable ${COLOR_CYAN}🆔${CoR}                       Disable Proxy host by ${COLOR_YELLOW}ID${CoR}"
   echo -e "  --host-delete  ${COLOR_CYAN}🆔${CoR}                       Delete Proxy host by ${COLOR_YELLOW}ID${CoR}"
   echo -e "  --host-update  ${COLOR_CYAN}🆔${CoR} ${COLOR_CYAN}[field]=value${CoR}         Update One specific field of an existing proxy host by ${COLOR_YELLOW}ID${CoR}"
-  echo -e "                                          (eg., --host-update 42 forward_host=foobar.local)${CoR}"
+  echo -e "                                          (eg., --host-update 42 forward_port=8080)${CoR}"
   echo ""
   echo -e "  --host-acl-enable  ${COLOR_CYAN}🆔${CoR} ${COLOR_CYAN}access_list_id${CoR}    Enable ACL for Proxy host by ${COLOR_YELLOW}ID${CoR} with Access List ID"
   echo -e "  --host-acl-disable ${COLOR_CYAN}🆔${CoR}                   Disable ACL for Proxy host by ${COLOR_YELLOW}ID${CoR}"
@@ -754,23 +753,21 @@ examples_cli() {
     echo -e "${COLOR_GREY}  # Create host with custom headers${CoR}"
     echo -e "  $0 --host-create example.com -i 192.168.1.10 -p 8080 -a 'proxy_set_header X-Real-IP \$remote_addr;'"
     echo -e "${COLOR_GREY}  # Update specific field of existing host${CoR}"
-    echo -e "  $0 --host-update 42 forward_host=new.example.com"
+    echo -e "  $0 --host-update 42 forward_port=8080"
 
     echo -e "\n${COLOR_GREEN}⚙️ Advanced Configuration:${CoR}"
     echo -e "${COLOR_GREY}  # Create host with all options${CoR}"
-    echo -e "  $0 --host-create example.com -i 192.168.1.10 -p 8080 \\"
+    echo -e "  $0 --host-create example.com -p 8080 \\"
     echo -e "     -f https \\"
     echo -e "     -c true \\"
     echo -e "     -b true \\"
     echo -e "     -w true \\"
     echo -e "     -h true \\"
     echo -e "     -s true \\"
-    echo -e "     -a 'proxy_set_header X-Real-IP \$remote_addr;' \\"
     echo -e "     -l '[{\"path\":\"/api\",\"forward_scheme\":\"http\",\"forward_port\":8081,\"forward_path\":\"/target/path\"}]'"
 
     echo -e "\n${COLOR_YELLOW}📝 Command Parameters:${CoR}"
     echo -e "  domain                : Domain name for the proxy host"
-    echo -e "  -i, --forward-host    : Target server (IP/hostname)"
     echo -e "  -p, --forward-port    : Target port"
     echo -e "  -f, --forward-scheme  : http/https"
     echo -e "  -c, --cache           : Enable cache"
@@ -1098,8 +1095,8 @@ user_create() {
         if [ -n "$USER_ID" ]; then
             echo -e " ✅ ${COLOR_GREEN}User $USERNAME created successfully!${CoR}"
             echo -e " 📧 Email: ${COLOR_YELLOW}$EMAIL${CoR}"
-            echo -e " 📧 Email: ${COLOR_YELLOW}$FORWARDHOST${CoR}"
-            echo -e " 🆔 User ID: ${COLOR_YELLOW}$USER_ID${CoR}\n"            
+            echo -e " 📧 Forward host: ${COLOR_YELLOW}$FORWARDHOST${CoR}"
+            echo -e " 🆔 User ID: ${COLOR_YELLOW}$USER_ID${CoR}\n"
         else
             echo -e " ⚠️ ${COLOR_GREEN}User created but couldn't fetch ID${CoR}"
             echo -e " 📧 Email: ${COLOR_YELLOW}$EMAIL${CoR}\n"
@@ -1154,7 +1151,7 @@ user_delete() {
         echo -e " │ ID: ${COLOR_YELLOW}$USER_ID${CoR}"
         echo -e " │ Name: ${COLOR_GREEN}$USERNAME${CoR}"
         echo -e " │ Email: ${COLOR_CYAN}$EMAIL${CoR}"
-        echo -e " │ Proxy host: ${COLOR_CYAN}$FORWARDHOST${CoR}"
+        echo -e " │ Forward host: ${COLOR_CYAN}$FORWARDHOST${CoR}"
         echo -e " └───────────────────────────────────────────"
         echo -e " ⚠️  ${COLOR_RED}WARNING: This action cannot be undone!${CoR}"
         read -n 1 -r -p " 🔔 Confirm deletion? (y/n): " CONFIRM
@@ -1651,7 +1648,7 @@ create_or_update_proxy_host() {
     # Generate JSON
     DATA=$(jq -n \
         --arg domain "$DOMAIN_NAMES" \
-        --arg host "$FORWARD_HOST" \
+        --arg host "nohost.nodomain" \
         --arg port "$FORWARD_PORT" \
         --arg scheme "$FORWARD_SCHEME" \
         --argjson caching "$CACHING_ENABLED_JSON" \
@@ -1887,8 +1884,8 @@ update_proxy_host() {
   echo -e "\n 🔄 Updating proxy host for $DOMAIN_NAMES..."
 
   # 🔥 check if the required parameters are set
-  if [ -z "$DOMAIN_NAMES" ] || [ -z "$FORWARD_HOST" ] || [ -z "$FORWARD_PORT" ] || [ -z "$FORWARD_SCHEME" ]; then
-    echo -e "  ⛔${COLOR_RED} ERROR: Missing required parameters (domain, forward host, forward port, forward scheme).${CoR}"
+  if [ -z "$DOMAIN_NAMES" ] || [ -z "$FORWARD_PORT" ] || [ -z "$FORWARD_SCHEME" ]; then
+    echo -e "  ⛔${COLOR_RED} ERROR: Missing required parameters (domain, forward port, forward scheme).${CoR}"
     exit 1
   fi
 
@@ -1917,7 +1914,7 @@ update_proxy_host() {
   # 🔥 generate the JSON properly
   DATA=$(jq -n \
     --arg domain "$DOMAIN_NAMES" \
-    --arg host "$FORWARD_HOST" \
+    --arg host "nohost.nodomain" \
     --arg port "$FORWARD_PORT" \
     --arg scheme "$FORWARD_SCHEME" \
     --argjson caching "$CACHING_ENABLED_JSON" \
@@ -2583,7 +2580,7 @@ cert_generate() {
         if [ -z "$DOMAIN_EXISTS" ]; then
             echo -e "\n ${COLOR_RED}❌${CoR} Domain ${COLOR_YELLOW}$DOMAIN${CoR} is not configured in NPM."
             echo -e " ${COLOR_YELLOW}💡${CoR} First create a proxy host with:"
-            echo -e "   ${COLOR_CYAN}$0 --host-create $DOMAIN -i <forward_host_ignored> -p <forward_port>${CoR}\n"
+            echo -e "   ${COLOR_CYAN}$0 --host-create $DOMAIN -p <forward_port>${CoR}\n"
             exit 1
         fi
     fi
@@ -3973,7 +3970,7 @@ while [[ "$#" -gt 0 ]]; do
                   HOST_UPDATE=true
               else
                   echo -e "\n ⛔ ${COLOR_RED}INVALID: La paire field=value est incorrecte.${CoR}"
-                  echo -e "   Exemple: $0 --host-update 42 forward_host=new.backend.local"
+                  echo -e "   Exemple: $0 --host-update 42 forward_port=8080"
                   exit 1
               fi
 
@@ -3994,7 +3991,6 @@ while [[ "$#" -gt 0 ]]; do
                 echo -e "\n ⛔ ${COLOR_RED}INVALID: The --host-create option requires arguments${CoR}"
                 echo -e "\n Required options:"
                 echo -e "  • Domain name ${COLOR_GREY}(positional argument)${CoR}"
-                echo -e "  • -i, --forward-host     ${COLOR_RED}IGNORED${CoR} ${COLOR_GREY}Forward host (e.g., 127.0.0.1)${CoR}"
                 echo -e "  • -p, --forward-port     ${COLOR_GREY}Forward port (e.g., 8080)${CoR}"
                 echo -e "\n Optional:"
                 echo -e "  • -f, --forward-scheme   ${COLOR_GREY}Protocol (http/https, default: http)${CoR}"
@@ -4026,27 +4022,6 @@ while [[ "$#" -gt 0 ]]; do
             # Process remaining options
             while [[ $# -gt 0 ]]; do
                 case "$1" in
-                    -i|--forward-host)
-                        if [[ -n "$2" && "$2" != -* ]]; then
-                            FORWARD_HOST="$2"
-                            shift 2
-                        else
-                            echo -e "\n ⛔ ${COLOR_RED}INVALID: The --forward-host option requires a valid value${CoR}"
-                            echo -e "\n Required options:"
-                            echo -e "  • Domain name ${COLOR_GREY}(positional argument)${CoR}"
-                            echo -e "  • -i, --forward-host     ${COLOR_RED}IGNORED${CoR} ${COLOR_GREY}Forward host (e.g., 127.0.0.1)${CoR}"
-                            echo -e "  • -p, --forward-port     ${COLOR_GREY}Forward port (e.g., 8080)${CoR}"
-                            echo -e "\n Optional:"
-                            echo -e "  • -f, --forward-scheme   ${COLOR_GREY}Protocol (http/https, default: http)${CoR}"
-                            echo -e "  • -b, --block-exploits   ${COLOR_GREY}Block common exploits (true/false, default: false)${CoR}"
-                            echo -e "  • -c, --cache            ${COLOR_GREY}Enable caching (true/false, default: false)${CoR}"
-                            echo -e "  • -w, --websocket        ${COLOR_GREY}Allow websocket upgrade (true/false, default: false)${CoR}"
-                            echo -e "  • -h, --http2            ${COLOR_GREY}Enable HTTP/2 support (true/false, default: false)${CoR}"
-                            echo -e "  • -s, --ssl-force        ${COLOR_GREY}Force SSL (true/false, default: false)${CoR}"
-                            echo -e "  • -l, --custom-locations ${COLOR_GREY}Custom location rules (JSON array)${CoR}"
-                            exit 1
-                        fi
-                        ;;
                     -p|--forward-port)
                         if [[ -n "$2" && "$2" != -* && "$2" =~ ^[0-9]+$ ]]; then
                             FORWARD_PORT="$2"
@@ -4055,7 +4030,6 @@ while [[ "$#" -gt 0 ]]; do
                             echo -e "\n ⛔ ${COLOR_RED}INVALID: The --forward-port option requires a valid number${CoR}"
                             echo -e "\n Required options:"
                             echo -e "  • Domain name ${COLOR_GREY}(positional argument)${CoR}"
-                            echo -e "  • -i, --forward-host     ${COLOR_RED}IGNORED${CoR} ${COLOR_GREY}Forward host (e.g., 127.0.0.1)${CoR}"
                             echo -e "  • -p, --forward-port     ${COLOR_GREY}Forward port (e.g., 8080)${CoR}"
                             exit 1
                         fi
@@ -4096,7 +4070,7 @@ while [[ "$#" -gt 0 ]]; do
                         else
                             echo -e "\n ⛔ ${COLOR_RED}INVALID: The --custom-locations option requires a JSON value${CoR}"
                             echo -e "   ${COLOR_CYAN}Example:${CoR}"
-                            echo -e "   ${COLOR_GREEN}$0 --host-create example.com -i 192.168.1.10 -p 8080 -l '[{\"path\":\"/api\",\"forward_scheme\":\"http\",\"forward_port\":8081,\"forward_path\":\"/target/path\"}]'${CoR}"
+                            echo -e "   ${COLOR_GREEN}$0 --host-create example.com -p 8080 -l '[{\"path\":\"/api\",\"forward_scheme\":\"http\",\"forward_port\":8081,\"forward_path\":\"/target/path\"}]'${CoR}"
                             exit 1
                         fi
                         ;;
@@ -4134,19 +4108,15 @@ while [[ "$#" -gt 0 ]]; do
             done
         
             # check settings
-            if [ -z "$FORWARD_HOST" ] || [ -z "$FORWARD_PORT" ]; then
-                echo -e "\n ⛔ ${COLOR_RED}INVALID: Missing required parameters${CoR}"
-                echo -e " Required options:"
-                echo -e "    • Domain name: ${COLOR_GREEN}$DOMAIN_NAMES${CoR} ${COLOR_GREY}(provided)${CoR}"
-                [ -z "$FORWARD_HOST" ] && echo -e "    • -i, --forward-host     ${COLOR_RED}Missing${CoR}"
-                [ -z "$FORWARD_PORT" ] && echo -e "    • -p, --forward-port     ${COLOR_RED}Missing${CoR}"
+            if [ -z "$FORWARD_PORT" ]; then
+                echo -e "    • -p, --forward-port     ${COLOR_RED}Missing${CoR}"
                 echo -e "\n Example:"
-                echo -e "   ${COLOR_GREEN}$0 --host-create example.com -i 127.0.0.1 -p 8080${CoR}\n"
+                echo -e "   ${COLOR_GREEN}$0 --host-create example.com -p 8080${CoR}\n"
                 exit 1
             fi
 
             # Create proxy host
-            create_or_update_proxy_host "$DOMAIN_NAMES" "$FORWARD_HOST" "$FORWARD_PORT" \
+            create_or_update_proxy_host "$DOMAIN_NAMES" "$FORWARD_PORT" \
                        "${FORWARD_SCHEME:-http}" "${BLOCK_EXPLOITS:-false}" "${CACHING_ENABLED:-false}" \
                        "${ALLOW_WEBSOCKET_UPGRADE:-false}" "${HTTP2_SUPPORT:-false}" "${SSL_FORCED:-false}"
         ;;
@@ -4511,7 +4481,7 @@ elif [ "$HOST_SHOW" = true ]; then
   host_show "$HOST_ID"
 
 elif [ "$HOST_CREATE" = true ]; then
-    create_or_update_proxy_host "$DOMAIN_NAMES" "$FORWARD_HOST" "$FORWARD_PORT"
+    create_or_update_proxy_host "$DOMAIN_NAMES" "$FORWARD_PORT"
     # Set CERT_DOMAIN if cert generation is requested
     if [ "$CERT_GENERATE" = true ]; then
         cert_generate "$DOMAIN_NAMES" "$CERT_EMAIL" "$CERT_DNS_PROVIDER" "$CERT_DNS_CREDENTIALS"
