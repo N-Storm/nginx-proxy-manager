@@ -10,8 +10,8 @@
 					"examples": {
 						"default": {
 							"value": {
-								"current": "v2.12.0",
-								"latest": "v2.13.4",
+								"current": "v2.13.45",
+								"latest": "v2.13.5-m2",
 								"update_available": true
 							}
 						}

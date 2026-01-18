@@ -3,7 +3,7 @@ import { ProxyAgent } from "proxy-agent";
 import { debug, remoteVersion as logger } from "../logger.js";
 import pjson from "../package.json" with { type: "json" };
 
-const VERSION_URL = "https://api.github.com/repos/NginxProxyManager/nginx-proxy-manager/releases/latest";
+const VERSION_URL = "https://api.github.com/repos/N-Storm/nginx-proxy-manager/releases/latest";
 
 const internalRemoteVersion = {
 	cache_timeout: 1000 * 60 * 15, // 15 minutes
@@ -29,8 +29,8 @@ const internalRemoteVersion = {
 		}
 
 		const latestVersion = internalRemoteVersion.last_result.tag_name;
-		const version = pjson.version.split("-").shift().split(".");
-		const currentVersion = `v${version[0]}.${version[1]}.${version[2]}`;
+		// const version = pjson.version.split(".").map( x => x.split("-") ).flat().map( x => isNaN(x) ? String(x) : Number(x) );
+		const currentVersion = `v${pjson.version}`;
 		return {
 			current: currentVersion,
 			latest: latestVersion,
@@ -67,8 +67,8 @@ const internalRemoteVersion = {
 		const cleanCurrent = current.replace(/^v/, "");
 		const cleanLatest = latest.replace(/^v/, "");
 
-		const currentParts = cleanCurrent.split(".").map(Number);
-		const latestParts = cleanLatest.split(".").map(Number);
+		const currentParts = cleanCurrent.split(".").map( x => x.split("-") ).flat().map( x => parseInt(x.match('[0-9]+')) );
+		const latestParts = cleanLatest.split(".").map( x => x.split("-") ).flat().map( x => parseInt(x.match('[0-9]+')) );
 
 		for (let i = 0; i < Math.max(currentParts.length, latestParts.length); i++) {
 			const curr = currentParts[i] || 0;

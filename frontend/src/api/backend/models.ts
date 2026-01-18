@@ -2,6 +2,7 @@ export interface AppVersion {
 	major: number;
 	minor: number;
 	revision: number;
+	patchlevel?: string;
 }
 
 export interface UserPermissions {

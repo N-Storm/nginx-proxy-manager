@@ -20,7 +20,8 @@
 			"example": {
 				"major": 2,
 				"minor": 0,
-				"revision": 0
+				"revision": 0,
+				"patchlevel": "m1"
 			},
 			"additionalProperties": false,
 			"required": ["major", "minor", "revision"],
@@ -39,6 +40,10 @@
 					"type": "integer",
 					"minimum": 0,
 					"example": 1
+				},
+				"patchlevel": {
+					"type": "string",
+					"example": "m1"
 				}
 			}
 		}
