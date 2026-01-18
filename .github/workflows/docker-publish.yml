@@ -4,7 +4,7 @@ on:
   push:
     branches: [ "fossvps-mod" ]
     # Publish semver tags as releases.
-    tags: [ 'v*.*.*' ]
+    tags: [ 'v*.*.*', 'v*.*.*-*' ]
   pull_request:
     paths-ignore:
       - '**/*.md'
