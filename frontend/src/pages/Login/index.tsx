@@ -37,7 +37,7 @@ export default function Login() {
 			return "";
 		}
 		const v = health.data.version;
-		return `v${v.major}.${v.minor}.${v.revision}`;
+		return `v${v.major}.${v.minor}.${v.revision}${v.patchlevel ? `-${v.patchlevel}` : ''}`;
 	};
 
 	return (

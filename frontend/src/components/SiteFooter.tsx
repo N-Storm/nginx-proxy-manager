@@ -10,7 +10,7 @@ export function SiteFooter() {
 			return "";
 		}
 		const v = health.data.version;
-		return `v${v.major}.${v.minor}.${v.revision}`;
+		return `v${v.major}.${v.minor}.${v.revision}${v.patchlevel ? `-${v.patchlevel}` : ''}`;
 	};
 
 	return (
@@ -47,19 +47,19 @@ export function SiteFooter() {
 							</li>
 							<li className="list-inline-item">
 								<a
-									href={`https://github.com/NginxProxyManager/nginx-proxy-manager/releases/tag/${getVersion()}`}
+									href={`https://github.com/N-Storm/nginx-proxy-manager/releases/tag/${getVersion()}`}
 									className="link-secondary"
 									target="_blank"
 									rel="noopener"
 								>
 									{" "}
-									{getVersion()}{" "}
+									{versionData?.current || getVersion()}{" "}
 								</a>
 							</li>
 							{versionData?.updateAvailable && versionData?.latest && (
 								<li className="list-inline-item">
 									<a
-										href={`https://github.com/NginxProxyManager/nginx-proxy-manager/releases/tag/${versionData.latest}`}
+										href={`https://github.com/N-Storm/nginx-proxy-manager/releases/tag/${versionData.latest}`}
 										className="link-warning fw-bold"
 										target="_blank"
 										rel="noopener"

@@ -27,7 +27,7 @@ const router = express.Router({
  * GET /api
  */
 router.get("/", async (_, res /*, next*/) => {
-	const version = pjson.version.split("-").shift().split(".");
+	const version = pjson.version.split(".").map( x => x.split("-") ).flat().map( x => isNaN(x) ? String(x) : Number(x) );
 	const setup = await isSetup();
 
 	res.status(200).send({
@@ -37,6 +37,7 @@ router.get("/", async (_, res /*, next*/) => {
 			major: Number.parseInt(version.shift(), 10),
 			minor: Number.parseInt(version.shift(), 10),
 			revision: Number.parseInt(version.shift(), 10),
+			patchlevel: version.shift(),
 		},
 	});
 });
