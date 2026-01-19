@@ -577,7 +577,6 @@ show_help() {
   echo -e "       ${COLOR_CYAN}-b ${COLOR_GREY}BLOCK_EXPLOITS${CoR}                  Block exploits (true/false, default: $(colorize_boolean "$BLOCK_EXPLOITS"))"
   echo -e "       ${COLOR_CYAN}-w ${COLOR_GREY}ALLOW_WEBSOCKET_UPGRADE${CoR}         Allow WebSocket upgrade (true/false, default: $(colorize_boolean "$ALLOW_WEBSOCKET_UPGRADE"))"
   echo -e "       ${COLOR_CYAN}-l ${COLOR_GREY}CUSTOM_LOCATIONS${CoR}                Custom locations (${COLOR_YELLOW}JSON array${CoR} of location objects)"
-  echo -e "       ${COLOR_CYAN}-a ${COLOR_GREY}ADVANCED_CONFIG${CoR}                 Advanced configuration (${COLOR_YELLOW}string${CoR})"
   #echo -e "       ${COLOR_CYAN}-h ${COLOR_GREY}HTTP2_SUPPORT${CoR}                   HTTP2 (true/false, default: $(colorize_boolean "$HTTP2_SUPPORT"))"
 
   echo ""
@@ -750,8 +749,6 @@ examples_cli() {
     echo -e "  $0 --host-acl-enable 42 2"
 
     # Advanced Configuration
-    echo -e "${COLOR_GREY}  # Create host with custom headers${CoR}"
-    echo -e "  $0 --host-create example.com -i 192.168.1.10 -p 8080 -a 'proxy_set_header X-Real-IP \$remote_addr;'"
     echo -e "${COLOR_GREY}  # Update specific field of existing host${CoR}"
     echo -e "  $0 --host-update 42 forward_port=8080"
 
