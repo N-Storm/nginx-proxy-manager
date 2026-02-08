@@ -6,7 +6,7 @@
 #   NPM api https://github.com/NginxProxyManager/nginx-proxy-manager/tree/develop/backend/schema
 #           https://github.com/NginxProxyManager/nginx-proxy-manager/tree/develop/backend/schema/components
 
-VERSION="3.0.7-m1"
+VERSION="3.0.7-m2"
 
 #################################
 # This script allows you to manage Nginx Proxy Manager via the API. It provides
@@ -1051,24 +1051,19 @@ user_create() {
   echo -e "\n 👤 Creating user ${COLOR_GREEN}$USERNAME${CoR}..."
   DATA=$(jq -n \
     --arg username "$USERNAME" \
-    --arg password "$PASSWORD" \
     --arg email "$EMAIL" \
     --arg forwardhost "$FORWARDHOST" \
     --arg name "$USERNAME" \
     --arg nickname "$USERNAME" \
-    --arg secret "$PASSWORD" \
     '{
       name: $name,
       nickname: $nickname,
       email: $email,
       designated_forward_host: $forwardhost,
       roles: [],
-      is_disabled: false,
-      auth: {
-        type: "password",
-        secret: $secret
-      }
+      is_disabled: false
     }')
+
     # send data to API
     RESPONSE=$(curl -s -w "HTTPSTATUS:%{http_code}" -X POST "$BASE_URL/users" \
         -H "Authorization: Bearer $(cat "$TOKEN_FILE")" \
@@ -1090,6 +1085,20 @@ user_create() {
             '.[] | select(.email == $email and .name == $name) | .id')
 
         if [ -n "$USER_ID" ]; then
+            # Set password
+            AUTH_DATA=$(jq -n \
+              --arg password "$PASSWORD" \
+              '{
+                 type: "password",
+                 secret: $password
+              }')
+
+            # send auth data to API
+            AUTH_RESPONSE=$(curl -s -w "HTTPSTATUS:%{http_code}" -X PUT "$BASE_URL/users/$USER_ID/auth" \
+                -H "Authorization: Bearer $(cat "$TOKEN_FILE")" \
+                -H "Content-Type: application/json; charset=UTF-8" \
+                --data-raw "$AUTH_DATA")
+
             # Set permissions
             PERMISSIONS_DATA=$(jq -n \
               '{
@@ -1102,7 +1111,7 @@ user_create() {
                 streams: "hidden"
               }')
 
-            # send data to API
+            # send permissions data to API
             PERMISSIONS_RESPONSE=$(curl -s -w "HTTPSTATUS:%{http_code}" -X PUT "$BASE_URL/users/$USER_ID/permissions" \
                 -H "Authorization: Bearer $(cat "$TOKEN_FILE")" \
                 -H "Content-Type: application/json; charset=UTF-8" \
